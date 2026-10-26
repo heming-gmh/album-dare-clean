@@ -1,0 +1,12 @@
+{
+  "name": "album-dare-harmony",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HarmonyOS NEXT shell. Open this folder in DevEco Studio.",
+  "license": "UNLICENSED",
+  "ohos": {
+    "org": "albumdare",
+    "buildTool": "hvigor",
+    "directoryLevel": "project"
+  }
+}

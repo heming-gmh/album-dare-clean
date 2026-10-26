@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "智能整理入口模块"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "分组建议"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "智能整理"
+    },
+    {
+      "name": "read_media_reason",
+      "value": "仅在你明确同意后，于本机读取少量照片和视频做分组建议。原片不会上传。"
+    }
+  ]
+}

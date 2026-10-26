@@ -1,0 +1,19 @@
+{
+  "name": "@album-dare/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portable policy engine for album grouping suggestions. No device APIs and no uploads.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "tsc -p tsconfig.json && node --test dist/policy/*.test.js dist/gate/*.test.js dist/recycle/*.test.js dist/demo/*.test.js dist/repo/*.test.js",
+    "demo": "tsc -p tsconfig.json && node dist/demo/printDemo.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3"
+  }
+}

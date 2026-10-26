@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Entry HAP for the album grouping shell.",
+  "main": "",
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {}
+}
