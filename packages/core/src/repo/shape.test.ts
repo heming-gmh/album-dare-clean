@@ -91,6 +91,31 @@ test("interface copy stays inside the allowed wording", () => {
   assert.equal(coreText.includes("垃圾"), false);
 });
 
+test("web preview repeats the same wording contract", () => {
+  const files = [
+    ...walk(path.join(root, "apps/web-preview/src"), ".ts"),
+    ...walk(path.join(root, "apps/web-preview/src"), ".html"),
+  ];
+  assert.ok(files.length >= 2);
+  const combined = files.map((file) => readFileSync(file, "utf8")).join("\n");
+  for (const banned of ["强力清理", "垃圾", "最佳照片", "相似"]) {
+    assert.equal(combined.includes(banned), false, banned);
+  }
+  for (const required of ["智能整理", "分组建议", "建议移出图库", "不确定"]) {
+    assert.ok(combined.includes(required), required);
+  }
+});
+
+test("web preview ships as one offline html file", () => {
+  const html = read("apps/web-preview/dist/index.html");
+  assert.ok(html.length > 20000, "bundle looks too small, rebuild the preview");
+  assert.equal(html.includes("<script src="), false, "preview must not load external scripts");
+  assert.equal(/https?:\/\//.test(html), false, "preview must not reference the network");
+  for (const text of ["建议移出图库", "窗外的云", "空白天花板", "妈妈一闪而过"]) {
+    assert.ok(html.includes(text), text);
+  }
+});
+
 test("Harmony fixture lists the same demo media ids", () => {
   const catalog = read("apps/harmony/entry/src/main/ets/core/FixtureData.ets");
   for (const id of [

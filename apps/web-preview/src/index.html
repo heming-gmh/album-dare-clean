@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>album dare clean · 体验版预览</title>
+    <style>
+      :root {
+        --paper: #f6f4ef;
+        --card: #fffcf7;
+        --ink: #1f1a17;
+        --muted: #6b645c;
+        --line: #ddd6cc;
+        --keep-bg: #e7f5ec;
+        --keep-line: #b7d7c3;
+        --keep-ink: #2f6b45;
+        --warn-bg: #ffe7a3;
+        --warn-line: #8a5a00;
+        --warn-ink: #8a5a00;
+        --accent: #8a5a00;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 28px 16px 72px;
+        background: var(--paper);
+        color: var(--ink);
+        font: 15px/1.55 -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      header.top h1 {
+        font-size: 22px;
+        margin: 0 0 6px;
+        letter-spacing: 0.02em;
+      }
+      header.top p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .tagline {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: #efe8dc;
+        color: #5c564e;
+        font-size: 12px;
+      }
+      section {
+        margin-top: 22px;
+        padding: 16px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      section > h2 {
+        font-size: 16px;
+        margin: 0 0 4px;
+      }
+      section > .hint {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 12.5px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .person {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fdfaf4;
+      }
+      .person .name {
+        font-size: 14px;
+      }
+      .person .meta {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .pill {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+      }
+      .pill.ready {
+        color: var(--keep-ink);
+        background: var(--keep-bg);
+        border-color: var(--keep-line);
+      }
+      .pill.incomplete {
+        color: var(--warn-ink);
+        background: var(--warn-bg);
+        border-color: #e2c46b;
+      }
+      .pill.held {
+        color: #5c564e;
+        background: #efe8dc;
+        border-color: #ddd6cc;
+        white-space: nowrap;
+      }
+      label.toggle {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+        cursor: pointer;
+        user-select: none;
+      }
+      textarea {
+        width: 100%;
+        min-height: 62px;
+        margin-top: 10px;
+        padding: 10px 12px;
+        resize: vertical;
+        font: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        background: #fdfaf4;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      textarea:focus {
+        outline: 2px solid #d8c7a4;
+        outline-offset: 1px;
+      }
+      button {
+        font: inherit;
+        font-size: 14px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        padding: 10px 16px;
+        cursor: pointer;
+      }
+      button.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      button.primary:disabled {
+        background: #cdbfa8;
+        cursor: not-allowed;
+      }
+      button.ghost {
+        background: #efe8dc;
+        color: var(--ink);
+      }
+      .notice {
+        margin-top: 10px;
+        font-size: 12.5px;
+        color: var(--muted);
+        min-height: 18px;
+      }
+      .rules {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .rule {
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: #f5f1e9;
+        font-size: 12px;
+        color: #4a453d;
+      }
+      .rule b {
+        display: block;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+      .bucket {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: #f7f4ef;
+      }
+      .bucket.keep {
+        background: var(--keep-bg);
+        border-color: var(--keep-line);
+      }
+      .bucket.uncertain {
+        background: var(--warn-bg);
+        border-color: var(--warn-line);
+        border-width: 2px;
+      }
+      .bucket h3 {
+        font-size: 15px;
+        margin: 0 0 2px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .bucket .cap {
+        font-size: 12px;
+        color: #5c564e;
+        margin-bottom: 8px;
+      }
+      .badge {
+        font-size: 11px;
+        background: var(--warn-ink);
+        color: #fff;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-weight: 400;
+      }
+      .empty {
+        font-size: 12.5px;
+        color: #8a8178;
+        padding: 6px 2px;
+      }
+      .media {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 9px 10px;
+        margin-top: 6px;
+        border-radius: 12px;
+        background: var(--card);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .media .body {
+        flex: 1;
+        min-width: 0;
+      }
+      .media .title {
+        font-size: 14px;
+      }
+      .media .kind {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .media .reason {
+        font-size: 12.5px;
+        color: #3e3a36;
+        margin-top: 4px;
+      }
+      .frames {
+        display: flex;
+        gap: 5px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+      }
+      .frame {
+        width: 52px;
+        height: 34px;
+        border-radius: 7px;
+        font-size: 9.5px;
+        color: #3e3a36;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2px;
+      }
+      .rule-tag {
+        font-size: 10.5px;
+        color: #8a8178;
+        white-space: nowrap;
+        padding-top: 2px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .recycle-item {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 10px;
+        margin-top: 6px;
+        border-radius: 12px;
+        background: #fdfaf4;
+        border: 1px solid var(--line);
+      }
+      .recycle-item .stamp {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .recycle-item.restored {
+        opacity: 0.62;
+      }
+      footer {
+        margin-top: 26px;
+        font-size: 11.5px;
+        color: #8a8178;
+        line-height: 1.7;
+      }
+      footer code {
+        font-size: 11px;
+        background: #efe8dc;
+        padding: 1px 5px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <h1>album dare clean · 体验版预览</h1>
+        <p>用一句话把一小部分相册分成三桶。建议不会自己执行。</p>
+        <span class="tagline">智能整理 · 分组建议 · 全部离线</span>
+      </header>
+      <div id="app"></div>
+      <footer>
+        这个页面直接复用 <code>packages/core</code> 的规则：轨 A 编译、DareDeleteGate、回收站。
+        没有真实照片、没有网络、没有定时删除。真机适配层仍待接入，见
+        <code>docs/ARCHITECTURE.md</code>。
+      </footer>
+    </div>
+    <!--APP_SCRIPT-->
+  </body>
+</html>

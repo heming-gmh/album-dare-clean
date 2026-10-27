@@ -1,0 +1,14 @@
+{
+  "name": "@album-dare/web-preview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Single-file browser preview of the album grouping flow. No DevEco, no device, no uploads.",
+  "scripts": {
+    "build": "node build.mjs",
+    "open": "node build.mjs && open dist/index.html"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

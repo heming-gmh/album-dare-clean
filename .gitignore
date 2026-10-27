@@ -20,3 +20,7 @@ local.properties
 .env.*
 *.keystore
 signing/
+
+# 浏览器预览要能直接双击打开，产物单独放行
+!apps/web-preview/dist/
+!apps/web-preview/dist/index.html

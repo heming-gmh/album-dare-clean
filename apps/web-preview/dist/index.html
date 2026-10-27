@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>album dare clean · 体验版预览</title>
+    <style>
+      :root {
+        --paper: #f6f4ef;
+        --card: #fffcf7;
+        --ink: #1f1a17;
+        --muted: #6b645c;
+        --line: #ddd6cc;
+        --keep-bg: #e7f5ec;
+        --keep-line: #b7d7c3;
+        --keep-ink: #2f6b45;
+        --warn-bg: #ffe7a3;
+        --warn-line: #8a5a00;
+        --warn-ink: #8a5a00;
+        --accent: #8a5a00;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 28px 16px 72px;
+        background: var(--paper);
+        color: var(--ink);
+        font: 15px/1.55 -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      header.top h1 {
+        font-size: 22px;
+        margin: 0 0 6px;
+        letter-spacing: 0.02em;
+      }
+      header.top p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .tagline {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: #efe8dc;
+        color: #5c564e;
+        font-size: 12px;
+      }
+      section {
+        margin-top: 22px;
+        padding: 16px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      section > h2 {
+        font-size: 16px;
+        margin: 0 0 4px;
+      }
+      section > .hint {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 12.5px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .person {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fdfaf4;
+      }
+      .person .name {
+        font-size: 14px;
+      }
+      .person .meta {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .pill {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+      }
+      .pill.ready {
+        color: var(--keep-ink);
+        background: var(--keep-bg);
+        border-color: var(--keep-line);
+      }
+      .pill.incomplete {
+        color: var(--warn-ink);
+        background: var(--warn-bg);
+        border-color: #e2c46b;
+      }
+      .pill.held {
+        color: #5c564e;
+        background: #efe8dc;
+        border-color: #ddd6cc;
+        white-space: nowrap;
+      }
+      label.toggle {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+        cursor: pointer;
+        user-select: none;
+      }
+      textarea {
+        width: 100%;
+        min-height: 62px;
+        margin-top: 10px;
+        padding: 10px 12px;
+        resize: vertical;
+        font: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        background: #fdfaf4;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      textarea:focus {
+        outline: 2px solid #d8c7a4;
+        outline-offset: 1px;
+      }
+      button {
+        font: inherit;
+        font-size: 14px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        padding: 10px 16px;
+        cursor: pointer;
+      }
+      button.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      button.primary:disabled {
+        background: #cdbfa8;
+        cursor: not-allowed;
+      }
+      button.ghost {
+        background: #efe8dc;
+        color: var(--ink);
+      }
+      .notice {
+        margin-top: 10px;
+        font-size: 12.5px;
+        color: var(--muted);
+        min-height: 18px;
+      }
+      .rules {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .rule {
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: #f5f1e9;
+        font-size: 12px;
+        color: #4a453d;
+      }
+      .rule b {
+        display: block;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+      .bucket {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: #f7f4ef;
+      }
+      .bucket.keep {
+        background: var(--keep-bg);
+        border-color: var(--keep-line);
+      }
+      .bucket.uncertain {
+        background: var(--warn-bg);
+        border-color: var(--warn-line);
+        border-width: 2px;
+      }
+      .bucket h3 {
+        font-size: 15px;
+        margin: 0 0 2px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .bucket .cap {
+        font-size: 12px;
+        color: #5c564e;
+        margin-bottom: 8px;
+      }
+      .badge {
+        font-size: 11px;
+        background: var(--warn-ink);
+        color: #fff;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-weight: 400;
+      }
+      .empty {
+        font-size: 12.5px;
+        color: #8a8178;
+        padding: 6px 2px;
+      }
+      .media {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 9px 10px;
+        margin-top: 6px;
+        border-radius: 12px;
+        background: var(--card);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .media .body {
+        flex: 1;
+        min-width: 0;
+      }
+      .media .title {
+        font-size: 14px;
+      }
+      .media .kind {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .media .reason {
+        font-size: 12.5px;
+        color: #3e3a36;
+        margin-top: 4px;
+      }
+      .frames {
+        display: flex;
+        gap: 5px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+      }
+      .frame {
+        width: 52px;
+        height: 34px;
+        border-radius: 7px;
+        font-size: 9.5px;
+        color: #3e3a36;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2px;
+      }
+      .rule-tag {
+        font-size: 10.5px;
+        color: #8a8178;
+        white-space: nowrap;
+        padding-top: 2px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .recycle-item {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 10px;
+        margin-top: 6px;
+        border-radius: 12px;
+        background: #fdfaf4;
+        border: 1px solid var(--line);
+      }
+      .recycle-item .stamp {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .recycle-item.restored {
+        opacity: 0.62;
+      }
+      footer {
+        margin-top: 26px;
+        font-size: 11.5px;
+        color: #8a8178;
+        line-height: 1.7;
+      }
+      footer code {
+        font-size: 11px;
+        background: #efe8dc;
+        padding: 1px 5px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <h1>album dare clean · 体验版预览</h1>
+        <p>用一句话把一小部分相册分成三桶。建议不会自己执行。</p>
+        <span class="tagline">智能整理 · 分组建议 · 全部离线</span>
+      </header>
+      <div id="app"></div>
+      <footer>
+        这个页面直接复用 <code>packages/core</code> 的规则：轨 A 编译、DareDeleteGate、回收站。
+        没有真实照片、没有网络、没有定时删除。真机适配层仍待接入，见
+        <code>docs/ARCHITECTURE.md</code>。
+      </footer>
+    </div>
+    <script>
+(() => {
+  // ../../packages/core/src/roster/familyRoster.ts
+  var MIN_PROTOTYPES = 3;
+  var RosterError = class extends Error {
+    constructor(message) {
+      super(message);
+      this.name = "RosterError";
+    }
+  };
+  function normalizeName(name) {
+    return name.trim().toLowerCase();
+  }
+  function assertFixtureRef(sampleRef) {
+    if (!sampleRef.startsWith("fixture://") || sampleRef.includes("..")) {
+      throw new RosterError("样例必须使用 fixture:// 本机指针，不能指向网络或路径跳转");
+    }
+  }
+  function usablePrototype(prototype) {
+    assertFixtureRef(prototype.sampleRef);
+    return prototype.id.length > 0 && prototype.embedding.length > 0;
+  }
+  function createRoster(people) {
+    return {
+      people: people.map((person) => {
+        const prototypes2 = person.prototypes.map((prototype) => {
+          usablePrototype(prototype);
+          return prototype;
+        });
+        const readyCount = prototypes2.length;
+        return {
+          id: person.id,
+          displayName: person.displayName,
+          aliases: person.aliases ?? [],
+          prototypes: prototypes2,
+          status: readyCount >= MIN_PROTOTYPES ? "ready" : "incomplete"
+        };
+      })
+    };
+  }
+  function findPerson(roster, name) {
+    const key = normalizeName(name);
+    for (const person of roster.people) {
+      if (normalizeName(person.displayName) === key) return person;
+      for (const alias of person.aliases) {
+        if (normalizeName(alias) === key) return person;
+      }
+    }
+    return void 0;
+  }
+  function readyPeople(roster) {
+    return roster.people.filter((person) => person.status === "ready");
+  }
+
+  // ../../packages/core/src/policy/types.ts
+  var POLICY_AST_VERSION = "0.3";
+
+  // ../../packages/core/src/policy/intentCompiler.ts
+  var DEFAULT_EPSILON = 0.2;
+  var DEFAULT_TAU = 0.85;
+  function clean(value) {
+    return value.replace(/\u3000/g, " ").trim();
+  }
+  function splitClauses(template) {
+    const parts = template.split(/[；;\n，,]+/);
+    const clauses = [];
+    for (const part of parts) {
+      const clause = clean(part);
+      if (clause.length > 0) clauses.push(clause);
+    }
+    return clauses;
+  }
+  function validName(name) {
+    if (name.length < 1 || name.length > 12) return false;
+    return !/[的\s；;，,]/.test(name);
+  }
+  function parseKeep(clause) {
+    const prefix = "保留有";
+    if (!clause.startsWith(prefix)) return void 0;
+    let rest = clause.slice(prefix.length);
+    let kind;
+    if (rest.endsWith("的视频")) {
+      kind = "video";
+      rest = rest.slice(0, -"的视频".length);
+    } else if (rest.endsWith("的照片")) {
+      kind = "photo";
+      rest = rest.slice(0, -"的照片".length);
+    } else if (rest.endsWith("的")) {
+      rest = rest.slice(0, -1);
+    } else {
+      return void 0;
+    }
+    if (!validName(rest)) return void 0;
+    return kind ? { name: rest, kind } : { name: rest };
+  }
+  function parseAbsence(clause) {
+    const prefix = "没有";
+    if (!clause.startsWith(prefix)) return void 0;
+    const rest = clause.slice(prefix.length);
+    const suffixes = ["的可以建议移出", "的可建议移出", "可以建议移出", "可建议移出", "的建议移出", "建议移出"];
+    for (const suffix of suffixes) {
+      if (rest.endsWith(suffix) && rest.length > suffix.length) {
+        const name = rest.slice(0, rest.length - suffix.length);
+        if (validName(name)) return name;
+      }
+    }
+    return void 0;
+  }
+  function personRef(roster, name) {
+    const found = findPerson(roster, name);
+    if (!found) return { ref: { name }, ready: false, known: false };
+    if (found.status !== "ready") return { ref: { name, rosterId: found.id }, ready: false, known: true };
+    return { ref: { name, rosterId: found.id }, ready: true, known: true };
+  }
+  function predicate(ref) {
+    return { op: "has_person", person: { ...ref } };
+  }
+  function thresholdsOf(input, diagnostics) {
+    const thresholds = {
+      epsilon: input?.epsilon ?? DEFAULT_EPSILON,
+      tau: input?.tau ?? DEFAULT_TAU
+    };
+    if (!(thresholds.epsilon > 0 && thresholds.epsilon < 1)) {
+      diagnostics.push("ε 必须在 0 和 1 之间");
+    }
+    if (!(thresholds.tau > 0 && thresholds.tau <= 1)) {
+      diagnostics.push("τ 必须在 0 和 1 之间");
+    }
+    return thresholds;
+  }
+  function isPolarity(value) {
+    return value === "keep" || value === "suggest_remove";
+  }
+  function compileIntent(input) {
+    const diagnostics = [];
+    const drafts = /* @__PURE__ */ new Map();
+    let media = "any";
+    let scopeSet = false;
+    let videoFirst = true;
+    const setScope = (next) => {
+      if (!scopeSet) {
+        media = next;
+        scopeSet = true;
+        return;
+      }
+      if (media !== next) diagnostics.push("整理范围互相矛盾");
+    };
+    const mark = (name, inKeep, inAbsence) => {
+      const key = name.trim().toLowerCase();
+      const current2 = drafts.get(key) ?? { name: name.trim(), inKeep: false, inAbsence: false };
+      current2.inKeep = current2.inKeep || inKeep;
+      current2.inAbsence = current2.inAbsence || inAbsence;
+      drafts.set(key, current2);
+    };
+    for (const template of input.templates) {
+      for (const clause of splitClauses(template)) {
+        if (clause === "只看视频") {
+          setScope("video");
+          continue;
+        }
+        if (clause === "只看照片") {
+          setScope("photo");
+          continue;
+        }
+        if (clause === "照片和视频" || clause === "视频和照片") {
+          setScope("any");
+          continue;
+        }
+        if (clause === "视频优先") {
+          videoFirst = true;
+          continue;
+        }
+        const keep2 = parseKeep(clause);
+        if (keep2) {
+          if (keep2.kind) setScope(keep2.kind);
+          mark(keep2.name, true, false);
+          continue;
+        }
+        const absenceName = parseAbsence(clause);
+        if (absenceName) {
+          mark(absenceName, true, true);
+          continue;
+        }
+        diagnostics.push(`没看懂这一句：${clause}`);
+      }
+    }
+    for (const card of input.cards) {
+      const name = card.personName.trim();
+      if (!validName(name)) {
+        diagnostics.push("有一张卡片没有可用的人物");
+        continue;
+      }
+      if (!isPolarity(card.polarity)) {
+        diagnostics.push("卡片极性无法识别");
+        continue;
+      }
+      if (card.polarity === "keep") mark(name, true, false);
+      else mark(name, true, true);
+    }
+    const listed = [...drafts.values()];
+    for (const person of listed) {
+      if (person.inKeep) person.inAbsence = true;
+    }
+    if (listed.length === 0) diagnostics.push("还没有指定在乎的人");
+    const unresolved = [];
+    const keep = [];
+    const deleteIfAbsent = [];
+    for (const person of listed) {
+      const resolved = personRef(input.roster, person.name);
+      if (!resolved.ready) unresolved.push(person.name);
+      if (person.inKeep) keep.push(predicate(resolved.ref));
+      if (person.inAbsence) deleteIfAbsent.push(predicate(resolved.ref));
+    }
+    const thresholds = thresholdsOf(input.thresholds, diagnostics);
+    const executableDelete = unresolved.length === 0 && diagnostics.length === 0 && listed.length > 0 && deleteIfAbsent.length > 0;
+    let blockReason;
+    if (!executableDelete) {
+      if (unresolved.length > 0) {
+        blockReason = `还有人没建档完成：${unresolved.join("、")}。本次不会建议移出图库。`;
+      } else if (diagnostics.length > 0) {
+        blockReason = diagnostics[0];
+      } else {
+        blockReason = "本次不会建议移出图库。";
+      }
+    }
+    const policy = {
+      version: POLICY_AST_VERSION,
+      track: "A",
+      scope: { media },
+      videoFirst,
+      keep,
+      deleteIfAbsent,
+      unresolvedPersons: unresolved,
+      executableDelete,
+      diagnostics,
+      thresholds,
+      sources: {
+        templates: [...input.templates],
+        cards: input.cards.map((card) => ({ ...card }))
+      }
+    };
+    if (blockReason) policy.blockReason = blockReason;
+    return policy;
+  }
+
+  // ../../packages/core/src/evidence/observe.ts
+  var MATCH_FLOOR = 0.75;
+  function cosine(left, right) {
+    const length = Math.min(left.length, right.length);
+    let dot = 0;
+    let leftNorm = 0;
+    let rightNorm = 0;
+    for (let index = 0; index < length; index += 1) {
+      const a = left[index] ?? 0;
+      const b = right[index] ?? 0;
+      dot += a * b;
+      leftNorm += a * a;
+      rightNorm += b * b;
+    }
+    if (leftNorm === 0 || rightNorm === 0) return 0;
+    return dot / (Math.sqrt(leftNorm) * Math.sqrt(rightNorm));
+  }
+  function bestReadyMatch(roster, embedding) {
+    let best;
+    for (const person of readyPeople(roster)) {
+      for (const prototype of person.prototypes) {
+        const similarity = cosine(embedding, prototype.embedding);
+        if (!best || similarity > best.similarity) {
+          best = { person, similarity };
+        }
+      }
+    }
+    return best;
+  }
+  function observeFixture(roster, media) {
+    const faces = [];
+    let pHasFamily = 0;
+    let hasUnknownFace = false;
+    for (const face of media.faces) {
+      const hit = bestReadyMatch(roster, face.embedding);
+      if (!hit || hit.similarity < MATCH_FLOOR) {
+        hasUnknownFace = true;
+        faces.push({
+          faceId: face.faceId,
+          probability: hit?.similarity ?? 0,
+          unknown: true
+        });
+        continue;
+      }
+      pHasFamily = Math.max(pHasFamily, hit.similarity);
+      faces.push({
+        faceId: face.faceId,
+        rosterId: hit.person.id,
+        displayName: hit.person.displayName,
+        probability: hit.similarity,
+        unknown: false
+      });
+    }
+    return {
+      mediaId: media.mediaId,
+      kind: media.kind,
+      title: media.title,
+      coverage: media.coverage,
+      faces,
+      pHasFamily,
+      hasUnknownFace,
+      keyframes: media.keyframes,
+      capturedAt: media.capturedAt
+    };
+  }
+
+  // ../../packages/core/src/gate/dareDeleteGate.ts
+  function keepIds(policy) {
+    const ids = /* @__PURE__ */ new Set();
+    for (const predicate2 of policy.keep) {
+      if (predicate2.person.rosterId) ids.add(predicate2.person.rosterId);
+    }
+    return ids;
+  }
+  function inScope(policy, evidence) {
+    return policy.scope.media === "any" || policy.scope.media === evidence.kind;
+  }
+  function decision(evidence, bucket2, rule, reasons) {
+    return {
+      mediaId: evidence.mediaId,
+      bucket: bucket2,
+      rule,
+      reasons,
+      suggestsRemoval: bucket2 === "delete_cand"
+    };
+  }
+  function decide(policy, evidence) {
+    if (!inScope(policy, evidence)) {
+      return decision(evidence, "out_of_scope", "out_of_scope", ["不在这次整理范围里。"]);
+    }
+    const ids = keepIds(policy);
+    for (const face of evidence.faces) {
+      if (face.unknown || !face.rosterId || !face.displayName) continue;
+      if (!ids.has(face.rosterId)) continue;
+      if (face.probability < policy.thresholds.epsilon) continue;
+      return decision(evidence, "keep", "keep_person", [
+        `识别到在乎的人：${face.displayName}。留在我在乎的。`
+      ]);
+    }
+    if (!policy.executableDelete) {
+      return decision(evidence, "uncertain", "roster_blocked", [
+        policy.blockReason ?? "花名册还没建完，不会建议移出图库。"
+      ]);
+    }
+    if (evidence.hasUnknownFace) {
+      return decision(evidence, "uncertain", "unknown_face", [
+        "有未识别的人脸，放在不确定里，不会建议移出。"
+      ]);
+    }
+    if (evidence.coverage < policy.thresholds.tau) {
+      return decision(evidence, "uncertain", "low_coverage", [
+        "画面没有看全，放在不确定里，不会建议移出。"
+      ]);
+    }
+    if (evidence.pHasFamily >= policy.thresholds.epsilon) {
+      return decision(evidence, "uncertain", "family_possible", [
+        "像是花名册里的人，但这次没有放进「在乎」。先放在不确定里。"
+      ]);
+    }
+    const coverageText = `覆盖 ${Math.round(evidence.coverage * 100)}%`;
+    const preview = evidence.kind === "video" && evidence.keyframes.length > 0 ? `可先看 ${evidence.keyframes.length} 张关键帧。` : "";
+    return decision(evidence, "delete_cand", "delete_cand", [
+      `${coverageText}。没有在乎的人，也没有未识别人脸。建议移出图库。${preview}`
+    ]);
+  }
+  function compare(videoFirst, left, right) {
+    if (videoFirst && left.evidence.kind !== right.evidence.kind) {
+      return left.evidence.kind === "video" ? -1 : 1;
+    }
+    if (left.evidence.mediaId < right.evidence.mediaId) return -1;
+    if (left.evidence.mediaId > right.evidence.mediaId) return 1;
+    return 0;
+  }
+  function classifyAll(policy, items) {
+    const keep = [];
+    const uncertain = [];
+    const deleteCand = [];
+    const skipped = [];
+    for (const evidence of items) {
+      const gate = decide(policy, evidence);
+      const row = { evidence, decision: gate };
+      if (gate.bucket === "keep") keep.push(row);
+      else if (gate.bucket === "uncertain") uncertain.push(row);
+      else if (gate.bucket === "delete_cand") deleteCand.push(row);
+      else skipped.push(row);
+    }
+    const order = (left, right) => compare(policy.videoFirst, left, right);
+    keep.sort(order);
+    uncertain.sort(order);
+    deleteCand.sort(order);
+    skipped.sort(order);
+    return { keep, uncertain, deleteCand, skipped };
+  }
+
+  // ../../packages/core/src/recycle/recycleBin.ts
+  var MIN_HOLD_DAYS = 30;
+  var MS_PER_DAY = 24 * 60 * 60 * 1e3;
+  var RecycleError = class extends Error {
+    constructor(message) {
+      super(message);
+      this.name = "RecycleError";
+    }
+  };
+  function emptyRecycleBin() {
+    return { entries: [] };
+  }
+  function hold(bin, requests, now) {
+    for (const request of requests) {
+      if (!request.userConfirmed) {
+        throw new RecycleError("放进回收站必须经过明确确认");
+      }
+    }
+    const entries = bin.entries.map((entry) => ({ ...entry }));
+    for (const request of requests) {
+      const already = entries.some((entry) => entry.mediaId === request.mediaId && entry.status === "held");
+      if (already) continue;
+      const heldAt = now.toISOString();
+      const earliest = new Date(now.getTime() + MIN_HOLD_DAYS * MS_PER_DAY);
+      entries.push({
+        id: `hold:${request.mediaId}:${heldAt}`,
+        mediaId: request.mediaId,
+        title: request.title,
+        kind: request.kind,
+        heldAt,
+        earliestReleaseAt: earliest.toISOString(),
+        status: "held"
+      });
+    }
+    return { entries };
+  }
+  function restore(bin, entryId, now) {
+    let found = false;
+    const entries = bin.entries.map((entry) => {
+      if (entry.id !== entryId) return { ...entry };
+      found = true;
+      if (entry.status === "restored") return { ...entry };
+      return { ...entry, status: "restored", restoredAt: now.toISOString() };
+    });
+    if (!found) throw new RecycleError("回收站里没有这项");
+    return { entries };
+  }
+
+  // ../../packages/core/src/demo/fixture.ts
+  var MOM = [1, 0, 0, 0];
+  var DAD = [0, 1, 0, 0];
+  var CHILD = [0, 0, 1, 0];
+  var UNKNOWN = [0, 0, 0, 1];
+  function prototypes(person, base) {
+    return [0, 1, 2].map((index) => {
+      const embedding = base.map((value, axis) => {
+        if (value === 0) return index === axis ? 0.08 : 0;
+        return 1 - index * 0.03;
+      });
+      return {
+        id: `${person}-${index + 1}`,
+        sampleRef: `fixture://roster/${person}/${index + 1}`,
+        embedding
+      };
+    });
+  }
+  function frames(mediaId, tones) {
+    return tones.map((tone, index) => ({
+      id: `${mediaId}-k${index + 1}`,
+      label: `关键帧 ${index + 1}`,
+      tone
+    }));
+  }
+  var DEMO_MEDIA = [
+    {
+      mediaId: "vid-park-mom",
+      kind: "video",
+      title: "周末公园",
+      coverage: 0.96,
+      capturedAt: "2026-02-01T03:00:00.000Z",
+      faces: [{ faceId: "f1", embedding: [0.99, 0.02, 0, 0] }],
+      keyframes: frames("vid-park-mom", ["#8FBF9F", "#6EA4C4", "#E6C07B", "#C4B7A6"])
+    },
+    {
+      mediaId: "vid-home-dad",
+      kind: "video",
+      title: "家里晚饭",
+      coverage: 0.93,
+      capturedAt: "2026-02-02T11:00:00.000Z",
+      faces: [{ faceId: "f1", embedding: [0.02, 0.98, 0, 0] }],
+      keyframes: frames("vid-home-dad", ["#D7B48A", "#8AA6C1", "#C9C1B5"])
+    },
+    {
+      mediaId: "vid-landscape",
+      kind: "video",
+      title: "窗外的云",
+      coverage: 0.99,
+      capturedAt: "2026-02-03T02:00:00.000Z",
+      faces: [],
+      keyframes: frames("vid-landscape", ["#9EC3E0", "#E7EEF4", "#C5D4C0", "#F2E6C9"])
+    },
+    {
+      mediaId: "vid-street",
+      kind: "video",
+      title: "路边行人",
+      coverage: 0.97,
+      capturedAt: "2026-02-04T08:00:00.000Z",
+      faces: [{ faceId: "f1", embedding: UNKNOWN }],
+      keyframes: frames("vid-street", ["#C8C2B8", "#A9B1B8", "#E4D7C5"])
+    },
+    {
+      mediaId: "vid-dark",
+      kind: "video",
+      title: "夜里模糊",
+      coverage: 0.42,
+      capturedAt: "2026-02-05T14:00:00.000Z",
+      faces: [],
+      keyframes: frames("vid-dark", ["#4E5560", "#6B7380"])
+    },
+    {
+      mediaId: "vid-mom-brief",
+      kind: "video",
+      title: "妈妈一闪而过",
+      coverage: 0.35,
+      capturedAt: "2026-02-06T01:00:00.000Z",
+      faces: [{ faceId: "f1", embedding: [0.97, 0.04, 0, 0] }],
+      keyframes: frames("vid-mom-brief", ["#E7D3C5", "#B7C4B0"])
+    },
+    {
+      mediaId: "vid-mom-guest",
+      kind: "video",
+      title: "妈妈和客人",
+      coverage: 0.95,
+      capturedAt: "2026-02-07T06:00:00.000Z",
+      faces: [
+        { faceId: "f1", embedding: [0.98, 0.01, 0, 0] },
+        { faceId: "f2", embedding: UNKNOWN }
+      ],
+      keyframes: frames("vid-mom-guest", ["#E8C7B0", "#B9C7D6", "#D9D3C7"])
+    },
+    {
+      mediaId: "photo-child",
+      kind: "photo",
+      title: "小朋友画画",
+      coverage: 0.98,
+      capturedAt: "2026-02-08T04:00:00.000Z",
+      faces: [{ faceId: "f1", embedding: [0, 0.04, 0.98, 0] }],
+      keyframes: []
+    },
+    {
+      mediaId: "photo-ceiling",
+      kind: "photo",
+      title: "空白天花板",
+      coverage: 0.97,
+      capturedAt: "2026-02-09T04:00:00.000Z",
+      faces: [],
+      keyframes: []
+    },
+    {
+      mediaId: "photo-unknown",
+      kind: "photo",
+      title: "没见过的人",
+      coverage: 0.96,
+      capturedAt: "2026-02-10T04:00:00.000Z",
+      faces: [{ faceId: "f1", embedding: UNKNOWN }],
+      keyframes: []
+    }
+  ];
+  function demoRoster() {
+    return createRoster([
+      {
+        id: "mom",
+        displayName: "妈妈",
+        aliases: ["母亲"],
+        prototypes: prototypes("mom", MOM)
+      },
+      {
+        id: "dad",
+        displayName: "爸爸",
+        aliases: ["父亲"],
+        prototypes: prototypes("dad", DAD)
+      },
+      {
+        id: "child",
+        displayName: "小朋友",
+        aliases: ["孩子"],
+        prototypes: prototypes("child", CHILD)
+      }
+    ]);
+  }
+  function demoEvidence(roster = demoRoster()) {
+    return DEMO_MEDIA.map((media) => observeFixture(roster, media));
+  }
+  var DEMO_MEDIA_IDS = DEMO_MEDIA.map((media) => media.mediaId);
+
+  // src/main.ts
+  var DEFAULT_TEMPLATE = "保留有妈妈的；保留有爸爸的；保留有小朋友的";
+  var state = {
+    showCousin: false,
+    mentionCousin: false,
+    template: DEFAULT_TEMPLATE,
+    selected: /* @__PURE__ */ new Set(),
+    bin: emptyRecycleBin(),
+    notice: "已填入三位家人，每人 3 张内置样例。"
+  };
+  function rosterNow() {
+    const base = demoRoster().people.map((person) => ({
+      id: person.id,
+      displayName: person.displayName,
+      aliases: [...person.aliases],
+      prototypes: person.prototypes
+    }));
+    if (state.showCousin) {
+      base.push({ id: "cousin", displayName: "表姐", aliases: [], prototypes: [] });
+    }
+    return createRoster(base);
+  }
+  function templateNow() {
+    if (!state.mentionCousin) return state.template;
+    return `${state.template}；保留有表姐的`;
+  }
+  function compile() {
+    const roster = rosterNow();
+    const policy = compileIntent({ templates: [templateNow()], cards: [], roster });
+    const scan = classifyAll(policy, demoEvidence(roster));
+    const allowed = new Set(scan.deleteCand.map((row) => row.evidence.mediaId));
+    for (const id of [...state.selected]) {
+      if (!allowed.has(id)) state.selected.delete(id);
+    }
+    return { roster, policy, scan };
+  }
+  var current = compile();
+  function esc(value) {
+    return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function kindLabel(row) {
+    return row.evidence.kind === "video" ? "视频" : "照片";
+  }
+  function ymd(iso) {
+    return iso.slice(0, 10);
+  }
+  function bucketTitle(bucket2) {
+    if (bucket2 === "keep") return "我在乎的";
+    if (bucket2 === "uncertain") return "不确定";
+    return "建议移出图库";
+  }
+  function bucketCaption(bucket2) {
+    if (bucket2 === "keep") return "认出了你在乎的人，会留下。视频排在前面。";
+    if (bucket2 === "uncertain") return "这些不会并进「建议移出图库」。先别移出。";
+    return "只是分组建议。勾选并确认后才会进入回收站。";
+  }
+  function scopeLabel(policy) {
+    if (policy.scope.media === "video") return "只看视频";
+    if (policy.scope.media === "photo") return "只看照片";
+    return "照片和视频";
+  }
+  function frameStrip(row) {
+    if (row.evidence.keyframes.length === 0) return "";
+    const frames2 = row.evidence.keyframes.map(
+      (frame, index) => `<div class="frame" style="background:${esc(frame.tone)}">${esc(frame.label || `关键帧 ${index + 1}`)}</div>`
+    ).join("");
+    return `<div class="frames">${frames2}</div>`;
+  }
+  function heldEntry(mediaId) {
+    return state.bin.entries.find((entry) => entry.mediaId === mediaId && entry.status === "held");
+  }
+  function mediaRow(row, bucket2) {
+    const id = esc(row.evidence.mediaId);
+    const held = heldEntry(row.evidence.mediaId);
+    const checked = state.selected.has(row.evidence.mediaId) ? " checked" : "";
+    let box = "";
+    if (bucket2 === "delete_cand") {
+      box = held ? `<span class="pill held">已在回收站</span>` : `<input type="checkbox" data-media="${id}" aria-label="选中 ${esc(row.evidence.title)}"${checked} />`;
+    }
+    const reason = row.decision.reasons[0] ?? "";
+    return `
+    <div class="media">
+      ${box}
+      <div class="body">
+        <div class="title">${esc(row.evidence.title)}</div>
+        <div class="kind">${kindLabel(row)}</div>
+        ${frameStrip(row)}
+        <div class="reason">${esc(reason)}</div>
+      </div>
+      <div class="rule-tag">${esc(row.decision.rule)}</div>
+    </div>`;
+  }
+  function bucket(bucketId, rows) {
+    const badge = bucketId === "uncertain" ? `<span class="badge">先不要移出</span>` : "";
+    const body = rows.length === 0 ? `<div class="empty">这一组是空的</div>` : rows.map((row) => mediaRow(row, bucketId)).join("");
+    return `
+    <div class="bucket ${bucketId === "delete_cand" ? "delete" : bucketId}">
+      <h3>${bucketTitle(bucketId)}${badge}</h3>
+      <div class="cap">${bucketCaption(bucketId)}</div>
+      ${body}
+    </div>`;
+  }
+  function personRow(person) {
+    const ready = person.status === "ready";
+    const pill = ready ? "能参与建议" : `还差 ${3 - person.prototypes.length} 张样例`;
+    return `
+    <div class="person">
+      <span class="name">${esc(person.displayName)}</span>
+      <span class="meta">${person.prototypes.length} 张内置样例</span>
+      <span class="pill ${ready ? "ready" : "incomplete"}">${esc(pill)}</span>
+    </div>`;
+  }
+  function rulesPanel(policy) {
+    const unresolved = policy.unresolvedPersons.length > 0 ? policy.unresolvedPersons.join("、") : "无";
+    const executable = policy.executableDelete ? "可以给出建议" : "不会建议移出";
+    const eps = policy.thresholds.epsilon;
+    const tau = policy.thresholds.tau;
+    return `
+    <div class="rules">
+      <div class="rule"><b>这次范围</b>${scopeLabel(policy)}${policy.videoFirst ? " · 视频优先" : ""}</div>
+      <div class="rule"><b>移出建议</b>${executable}</div>
+      <div class="rule"><b>没建档的人</b>${esc(unresolved)}</div>
+      <div class="rule"><b>阈值</b>ε ${eps} / τ ${tau}</div>
+    </div>`;
+  }
+  function recyclePanel() {
+    if (state.bin.entries.length === 0) {
+      return `<div class="empty">回收站是空的。勾选「建议移出图库」里的项目，再确认放进回收站。</div>`;
+    }
+    return state.bin.entries.map((entry) => {
+      const restoredRow = entry.status === "restored";
+      const stamp = restoredRow ? `已恢复${entry.restoredAt ? ` · ${ymd(entry.restoredAt)}` : ""}` : `放入时间 ${ymd(entry.heldAt)} · 最早 ${ymd(entry.earliestReleaseAt)} 才能再处理`;
+      const action = restoredRow ? "" : `<button class="ghost" data-restore="${esc(entry.id)}">恢复</button>`;
+      return `
+        <div class="recycle-item${restoredRow ? " restored" : ""}">
+          <div>
+            <div class="title">${esc(entry.title)}</div>
+            <div class="stamp">${esc(stamp)}</div>
+          </div>
+          ${action}
+        </div>`;
+    }).join("");
+  }
+  function summaryLine(policy) {
+    if (!policy.executableDelete) {
+      return policy.blockReason ?? "这次不会建议移出图库。";
+    }
+    return `这次认出 ${policy.keep.length} 位在乎的人，建议移出 ${current.scan.deleteCand.length} 项。`;
+  }
+  function render() {
+    const { roster, policy, scan } = current;
+    const app = document.getElementById("app");
+    if (!app) return;
+    const selectedCount = state.selected.size;
+    app.innerHTML = `
+    <section>
+      <h2>家人花名册</h2>
+      <p class="hint">每人至少 3 张样例才算建档完成。没建完的人出现在句子里时，本次不会建议移出图库。</p>
+      <div class="row">${roster.people.map(personRow).join("")}</div>
+      <div class="row" style="margin-top:12px">
+        <label class="toggle"><input type="checkbox" id="show-cousin"${state.showCousin ? " checked" : ""} /> 花名册里加上「表姐」（0 张样例）</label>
+        <label class="toggle"><input type="checkbox" id="mention-cousin"${state.mentionCousin ? " checked" : ""} /> 句子里提到「表姐」</label>
+      </div>
+    </section>
+
+    <section>
+      <h2>这次怎么整理</h2>
+      <p class="hint">轨 A：模板句或人物卡片。多句用「；」分开。看不懂的句子不会变成全部可删。</p>
+      <textarea id="template" spellcheck="false">${esc(state.template)}</textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="primary" id="compile">生成分组建议</button>
+        <button class="ghost" id="reset">恢复默认句子</button>
+        <span class="notice" id="notice">${esc(state.notice)}</span>
+      </div>
+      ${rulesPanel(policy)}
+    </section>
+
+    <section>
+      <h2>分组建议</h2>
+      <p class="hint">智能整理只给建议：同一条媒体只出现在一桶里。</p>
+      <p class="notice">${esc(summaryLine(policy))}</p>
+      ${bucket("keep", scan.keep)}
+      ${bucket("uncertain", scan.uncertain)}
+      ${bucket("delete_cand", scan.deleteCand)}
+      <div class="row" style="margin-top:14px">
+        <button class="primary" id="hold"${selectedCount > 0 ? "" : " disabled"}>放进回收站（已选 ${selectedCount} 项）</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>回收站</h2>
+      <p class="hint">只进应用自己的回收站。至少 ${MIN_HOLD_DAYS} 天，没有定时清除，也没有永久删除按钮。</p>
+      ${recyclePanel()}
+      <div class="notice" id="notice-bin"></div>
+    </section>`;
+    bind();
+  }
+  function bind() {
+    const compileButton = document.getElementById("compile");
+    compileButton?.addEventListener("click", () => {
+      const box = document.getElementById("template");
+      if (box instanceof HTMLTextAreaElement) state.template = box.value;
+      current = compile();
+      state.notice = "分组建议已更新。";
+      render();
+    });
+    document.getElementById("reset")?.addEventListener("click", () => {
+      state.template = DEFAULT_TEMPLATE;
+      current = compile();
+      state.notice = "已恢复默认句子。";
+      render();
+    });
+    document.querySelectorAll("input[data-media]").forEach((box) => {
+      box.addEventListener("change", () => {
+        const mediaId = box.dataset.media;
+        if (!mediaId) return;
+        if (box.checked) state.selected.add(mediaId);
+        else state.selected.delete(mediaId);
+        render();
+      });
+    });
+    document.getElementById("hold")?.addEventListener("click", () => {
+      const requests = current.scan.deleteCand.filter((row) => state.selected.has(row.evidence.mediaId)).map((row) => ({
+        mediaId: row.evidence.mediaId,
+        title: row.evidence.title,
+        kind: row.evidence.kind,
+        userConfirmed: true
+      }));
+      if (requests.length === 0) {
+        state.notice = "先勾选要移出的项目。";
+        render();
+        return;
+      }
+      state.bin = hold(state.bin, requests, /* @__PURE__ */ new Date());
+      state.selected.clear();
+      state.notice = "已放进回收站。未满 30 天不会清除，也可以随时恢复。";
+      render();
+      const binNotice = document.getElementById("notice-bin");
+      if (binNotice) binNotice.textContent = state.notice;
+    });
+    document.querySelectorAll("[data-restore]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const entryId = button.dataset.restore;
+        if (!entryId) return;
+        state.bin = restore(state.bin, entryId, /* @__PURE__ */ new Date());
+        state.notice = "已恢复。这项不再留在回收站里。";
+        render();
+      });
+    });
+    const cousin = document.getElementById("show-cousin");
+    if (cousin instanceof HTMLInputElement) {
+      cousin.addEventListener("change", () => {
+        state.showCousin = cousin.checked;
+        state.notice = state.showCousin ? "表姐还没有样例，本次不会建议移出图库。" : "花名册已回到三位家人。";
+        current = compile();
+        render();
+      });
+    }
+    const mention = document.getElementById("mention-cousin");
+    if (mention instanceof HTMLInputElement) {
+      mention.addEventListener("change", () => {
+        state.mentionCousin = mention.checked;
+        state.notice = state.mentionCousin ? "句子里出现了没建档的人。" : "句子里不再提到表姐。";
+        current = compile();
+        render();
+      });
+    }
+  }
+  render();
+})();
+</script>
+  </body>
+</html>

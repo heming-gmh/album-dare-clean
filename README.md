@@ -10,6 +10,7 @@
 | --- | --- |
 | `packages/core` | PolicyAST v0.3、轨 A 编译、花名册、证据、DareDeleteGate、回收站、`DEMO_FIXTURE` |
 | `apps/harmony` | HarmonyOS NEXT / API 12 的 entry 模块和四个流程页 |
+| `apps/web-preview` | 单文件浏览器预览。不用 DevEco、不用真机，双击就能走完三桶和回收站 |
 | `apps/android`、`apps/ios` | 占位说明 |
 | `docs/AC.md` | AC-1 到 AC-8 |
 | `docs/BLIND_TEST.md` | T1 到 T8。演示前 T1 和 T3 必须通过 |
@@ -54,6 +55,19 @@ npm run demo
 鸿蒙首页的开关默认开着「演示样例」。关掉之后，本机适配层返回空列表，并说明图库还没接通，不会猜测哪些可以移出。
 
 把句子改成含有「表姐」这类没建档的人，可删候选会变空。样例不足 3 张的人同样不能产生移出建议。
+
+## 不用 DevEco 也能先看一遍
+
+`apps/web-preview/dist/index.html` 是单个 HTML 文件，直接双击打开即可。它复用 `packages/core` 的同一套规则，离线运行，不发网络请求，也不需要 HarmonyOS SDK。花名册里的两个开关可以复现盲测 T1：句子里出现没建档的人时，「建议移出图库」必须是空的。
+
+改完 `packages/core` 或预览代码后重新生成：
+
+```bash
+cd apps/web-preview
+npm install
+npm run build
+open dist/index.html
+```
 
 ## 用 DevEco 打开并安装
 
