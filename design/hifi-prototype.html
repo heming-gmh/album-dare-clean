@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>album dare clean · 六屏高保真原型</title>
+<style>
+  :root{
+    --paper:#F6F4EF; --card:#FFFCF7; --ink:#1F1A17; --muted:#6B645C; --line:#E4DCD0;
+    --accent:#8A5A00; --accent-soft:#F0E4CC;
+    --keep-bg:#E7F5EC; --keep-ink:#2F6B45; --keep-line:#B7D7C3;
+    --warn-bg:#FFE7A3; --warn-ink:#8A5A00;
+    --frame:#17140F;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0; background:#EDE9E1; color:var(--ink);
+    font:15px/1.5 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ---------- toolbar ---------- */
+  .toolbar{
+    position:sticky; top:0; z-index:10; display:flex; gap:14px; align-items:center;
+    padding:12px 20px; background:rgba(237,233,225,.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid #DDD6CB;
+  }
+  .brand{font-size:13px; font-weight:600; letter-spacing:.01em; white-space:nowrap}
+  .brand span{color:var(--muted); font-weight:400}
+  .steps{display:flex; gap:6px; margin-left:auto; flex-wrap:wrap}
+  .steps button{
+    font:inherit; font-size:12px; padding:5px 10px; border-radius:999px; cursor:pointer;
+    border:1px solid #D5CCBE; background:#F7F3EB; color:#4A453D;
+  }
+  .steps button.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .tools{display:flex; gap:6px}
+  .tools button{
+    font:inherit; font-size:12px; padding:5px 12px; border-radius:999px; cursor:pointer;
+    border:1px solid #D5CCBE; background:#F7F3EB; color:#4A453D;
+  }
+  /* ---------- stage ---------- */
+  .stage{display:flex; gap:36px; justify-content:center; align-items:flex-start; padding:34px 20px 60px}
+  .phone-wrap{filter:drop-shadow(0 26px 40px rgba(60,45,25,.22))}
+  .phone{
+    width:390px; height:844px; background:var(--paper); border:11px solid var(--frame);
+    border-radius:52px; overflow:hidden; position:relative;
+  }
+  .phone::after{
+    content:""; position:absolute; left:50%; transform:translateX(-50%); bottom:8px;
+    width:132px; height:5px; border-radius:3px; background:#1F1A17; opacity:.22;
+  }
+  .statusbar{
+    height:46px; display:flex; align-items:flex-end; justify-content:space-between;
+    padding:0 26px 6px; font-size:12.5px; font-weight:600; color:var(--ink);
+  }
+  .statusbar .right{display:flex; gap:5px; align-items:center; opacity:.85}
+  .bar{width:15px; height:9px; border:1.4px solid currentColor; border-radius:2.5px; position:relative}
+  .bar::after{content:""; position:absolute; inset:1.5px auto 1.5px 1.5px; width:8px; background:currentColor; border-radius:1px}
+  .screen{height:calc(100% - 46px); display:flex; flex-direction:column; padding:6px 22px 104px; overflow-y:auto}
+  .screen::-webkit-scrollbar{width:0}
+  .kicker{font-size:12px; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; margin:4px 0 8px}
+  h1{font-size:30px; line-height:1.28; margin:0 0 10px; letter-spacing:-.01em}
+  h2{font-size:22px; line-height:1.32; margin:0 0 8px}
+  .lead{margin:0; color:var(--muted); font-size:14.5px; line-height:1.62}
+  .grow{flex:1}
+  .foot{position:absolute; left:22px; right:22px; bottom:22px; padding:10px 0 2px; background:linear-gradient(to top,var(--paper) 76%,rgba(246,244,239,0))}
+  .btn{
+    display:block; width:100%; font:inherit; font-size:16px; font-weight:600; padding:15px;
+    border-radius:16px; border:1px solid transparent; cursor:pointer; text-align:center;
+  }
+  .btn.primary{background:var(--ink); color:#FFF8EE}
+  .btn.primary:disabled{background:#C9C1B4; color:#F6F4EF; cursor:not-allowed}
+  .btn.ghost{background:transparent; color:var(--ink); border-color:#D5CCBE}
+  .btn.amber{background:var(--accent); color:#FFF6E6}
+  .linkbtn{display:block; width:100%; background:none; border:0; font:inherit; font-size:13.5px; color:var(--muted); padding:12px 0 0; cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+  .fine{font-size:11.5px; color:#8A8178; line-height:1.6; margin:10px 0 0; text-align:center}
+  /* ---------- S1 ---------- */
+  .appmark{display:flex; gap:9px; align-items:center; margin:16px 0 26px}
+  .appmark .dot{width:30px; height:30px; border-radius:10px; background:linear-gradient(150deg,#8A5A00,#C99A3F)}
+  .appmark b{font-size:14px; letter-spacing:.02em}
+  .promises{list-style:none; margin:24px 0 0; padding:0; display:grid; gap:12px}
+  .promises li{display:flex; gap:12px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:13px 14px}
+  .promises .num{
+    flex:0 0 24px; height:24px; border-radius:8px; background:var(--accent-soft); color:var(--accent);
+    display:grid; place-items:center; font-size:12px; font-weight:700;
+  }
+  .promises b{display:block; font-size:14.5px; font-weight:600}
+  .promises i{display:block; font-style:normal; font-size:12.5px; color:var(--muted); margin-top:2px; line-height:1.5}
+  /* ---------- S2 ---------- */
+  .people{display:grid; gap:12px; margin-top:18px}
+  .person{
+    display:flex; align-items:center; gap:14px; padding:13px 14px; width:100%; text-align:left;
+    background:var(--card); border:1.5px solid var(--line); border-radius:18px; cursor:pointer; font:inherit; color:inherit;
+  }
+  .person.on{border-color:var(--keep-line); background:var(--keep-bg)}
+  .person .av{width:46px; height:46px; border-radius:50%; flex:0 0 46px; overflow:hidden}
+  .person .who{flex:1; min-width:0}
+  .person .who b{display:block; font-size:15.5px}
+  .person .who span{font-size:12.5px; color:var(--muted)}
+  .person .check{
+    width:22px; height:22px; border-radius:50%; border:1.5px solid #CFC6B8; display:grid; place-items:center;
+    font-size:12px; color:transparent; flex:0 0 22px;
+  }
+  .person.on .check{background:var(--keep-ink); border-color:var(--keep-ink); color:#fff}
+  .hintbox{
+    margin-top:16px; padding:11px 13px; border-radius:13px; background:#F1ECE2;
+    font-size:12px; color:#6B645C; line-height:1.55;
+  }
+  /* ---------- S3 ---------- */
+  .intent{
+    margin-top:18px; background:var(--card); border:1.5px solid var(--line); border-radius:18px; padding:14px 15px;
+    font-size:16.5px; line-height:1.6;
+  }
+  .intent .caret{display:inline-block; width:2px; height:18px; background:var(--accent); vertical-align:-3px; animation:blink 1.1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+  .chips button{
+    font:inherit; font-size:12.5px; padding:7px 12px; border-radius:999px; cursor:pointer;
+    background:#F7F3EB; border:1px solid #DED5C6; color:#4A453D;
+  }
+  /* ---------- S4 ---------- */
+  .buckets{display:grid; gap:10px; margin-top:10px}
+  .bucket{border-radius:16px; padding:11px 11px 7px; border:1px solid var(--line); background:#F7F4EF}
+  .bucket.keep{background:var(--keep-bg); border-color:var(--keep-line)}
+  .bucket.warn{background:var(--warn-bg); border-color:#D9B65A}
+  .bucket .head{display:flex; align-items:center; gap:8px; margin-bottom:2px}
+  .bucket .head b{font-size:14.5px}
+  .bucket .head .n{margin-left:auto; font-size:12px; color:var(--muted); font-weight:600}
+  .badge{font-size:10.5px; background:var(--warn-ink); color:#fff; border-radius:999px; padding:2px 8px; font-weight:600}
+  .bucket .cap{font-size:11px; color:#6B645C; margin-bottom:5px; line-height:1.4}
+  .row{
+    display:flex; gap:8px; align-items:center; padding:6px 8px; border-radius:11px; background:var(--card);
+    border:1px solid rgba(0,0,0,.045); margin-top:5px;
+  }
+  .row .thumb{width:34px; height:34px; border-radius:8px; flex:0 0 34px; background-size:cover}
+  .row .meta{flex:1; min-width:0}
+  .row .meta b{display:block; font-size:13.5px; font-weight:600}
+  .row .meta span{font-size:11px; color:var(--muted)}
+  .row .tick{width:20px; height:20px; border-radius:6px; border:1.5px solid #CFC6B8; flex:0 0 20px; display:grid; place-items:center; font-size:12px; color:transparent}
+  .row.on{border-color:#D9B65A}
+  .row.on .tick{background:var(--accent); border-color:var(--accent); color:#fff}
+  .row .why{font-size:11px; color:#6B645C; margin-top:2px; display:block}
+  .row.compact{padding:5px 8px}
+  .row.compact .thumb{width:30px;height:30px;border-radius:7px;flex:0 0 30px}
+  .row.compact .why{display:none}
+  .more{font-size:12px; color:#8A8178; padding:7px 4px 2px}
+  /* ---------- S5 ---------- */
+  .confirm-card{margin-top:18px; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:6px 13px}
+  .confirm-card .row{border:0; background:transparent; border-bottom:1px solid #EFE8DC; border-radius:0; padding:11px 0}
+  .confirm-card .row:last-child{border-bottom:0}
+  .safety{margin-top:16px; padding:13px 14px; border-radius:14px; background:#F1ECE2; font-size:12.5px; line-height:1.6; color:#5C564E}
+  .safety b{color:var(--ink)}
+  /* ---------- S6 ---------- */
+  .donehero{margin-top:10px; padding:22px 18px; border-radius:22px; background:linear-gradient(160deg,#E7F5EC,#DCEFE3); border:1px solid var(--keep-line); text-align:center}
+  .donehero .big{font-size:38px; font-weight:700; letter-spacing:-.02em; color:var(--keep-ink); line-height:1.15}
+  .donehero .unit{font-size:15px; font-weight:600; color:var(--keep-ink); opacity:.85}
+  .donehero p{margin:6px 0 0; font-size:12.5px; color:#4C6B58}
+  .rec-item{display:flex; gap:10px; align-items:center; padding:11px 12px; border-radius:14px; background:var(--card); border:1px solid var(--line); margin-top:9px}
+  .rec-item .meta{flex:1; min-width:0}
+  .rec-item .meta b{display:block; font-size:13.5px}
+  .rec-item .meta span{font-size:11.5px; color:var(--muted)}
+  .rec-item button{
+    font:inherit; font-size:12.5px; padding:7px 13px; border-radius:11px; cursor:pointer;
+    background:#F1ECE2; border:1px solid #DED5C6; color:var(--ink); flex:0 0 auto;
+  }
+  .rec-item.restored{opacity:.55}
+  /* ---------- notes ---------- */
+  .notes{width:310px; padding-top:6px}
+  .notes .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#A99F90; margin-bottom:6px}
+  .notes h3{font-size:18px; margin:0 0 14px}
+  .notes dl{margin:0; display:grid; gap:14px}
+  .notes dt{font-size:11.5px; letter-spacing:.08em; color:#A99F90; text-transform:uppercase; margin-bottom:4px}
+  .notes dd{margin:0; font-size:13px; line-height:1.6; color:#413B33}
+  .notes .flag{margin-top:20px; padding:12px 13px; border-radius:12px; background:#F7E9C9; border:1px solid #E3CC96; font-size:12.5px; line-height:1.6; color:#6B5217}
+  /* ---------- board ---------- */
+  .board{display:none; padding:10px 24px 70px; overflow-x:auto}
+  .board.on{display:block}
+  .board .rail{display:flex; gap:26px; align-items:flex-start; width:max-content}
+  .board .cell{transform:scale(.64); transform-origin:top left; width:390px; height:844px}
+  .board .label{font-size:11.5px; color:#8A8178; margin:6px 0 0; width:250px}
+  .board .holder{position:relative}
+  .board .shell{width:250px; height:540px; overflow:hidden; border-radius:34px}
+  @media (max-width:1080px){
+    .stage{flex-direction:column; align-items:center; gap:26px}
+    .notes{width:min(390px,92vw); padding-bottom:20px}
+  }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="brand">album dare clean <span>· 六屏高保真原型</span></div>
+    <div class="steps" id="steps"></div>
+    <div class="tools">
+      <button id="boardToggle">全部铺开</button>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="phone-wrap">
+      <div class="phone" id="phone"></div>
+    </div>
+    <aside class="notes" id="notes"></aside>
+  </div>
+
+  <div class="board" id="board"><div class="rail" id="rail"></div></div>
+
+<script>
+const AVATAR = (a, b) => `data:image/svg+xml;utf8,` + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><circle cx="50" cy="38" r="17" fill="#fff" opacity=".78"/><path d="M14 100c0-21 16-33 36-33s36 12 36 33z" fill="#fff" opacity=".78"/></svg>`
+);
+
+/* 关键帧用的占位色带 */
+const TONE = (c) => `data:image/svg+xml;utf8,` + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="${c}"/><rect y="52" width="80" height="28" fill="#000" opacity=".07"/></svg>`
+);
+
+const state = {
+  screen: 1,
+  people: new Set(["mom","dad","child"]),
+  selected: new Set(),
+  restored: new Set(),
+  board: false,
+};
+
+const PEOPLE = [
+  {id:"mom", name:"妈妈", count:"623 次", a:"#E3B98B", b:"#C98F6A"},
+  {id:"dad", name:"爸爸", count:"402 次", a:"#9FB6C9", b:"#7C97AE"},
+  {id:"child", name:"小朋友", count:"259 次", a:"#B6CDB4", b:"#8FAE8D"},
+];
+
+const DELETE_ITEMS = [
+  {id:"vid-landscape", title:"窗外的云", kind:"视频 · 12 秒", why:"没有家人在画面里 · 覆盖 99%", tone:"#9EC3E0"},
+  {id:"photo-ceiling", title:"空白天花板", kind:"照片", why:"没有家人在画面里 · 覆盖 97%", tone:"#D8D2C6"},
+  {id:"photo-receipt", title:"超市小票", kind:"照片", why:"没有家人在画面里 · 覆盖 96%", tone:"#CFC3A8"},
+];
+
+const KEEP_ITEMS = [
+  {title:"周末公园", kind:"视频 · 24 秒", tone:"#8FBF9F", why:"认出了妈妈"},
+  {title:"家里晚饭", kind:"视频 · 18 秒", tone:"#D7B48A", why:"认出了爸爸"},
+  {title:"小朋友画画", kind:"照片", tone:"#B6CDB4", why:"认出了小朋友"},
+];
+
+const UNCERTAIN_ITEMS = [
+  {title:"夜里模糊", kind:"视频 · 9 秒", tone:"#4E5560", why:"画面没有看全"},
+  {title:"路边行人", kind:"视频 · 6 秒", tone:"#A9B1B8", why:"有没认出的脸"},
+];
+
+const statusbar = `<div class="statusbar"><div>9:41</div><div class="right"><span>·ıl</span><span class="bar"></span></div></div>`;
+
+function personRow(p){
+  const on = state.people.has(p.id);
+  return `<button class="person${on?" on":""}" data-person="${p.id}">
+    <span class="av"><img src="${AVATAR(p.a,p.b)}" width="46" height="46" alt=""></span>
+    <span class="who"><b>${p.name}</b><span>${p.count}</span></span>
+    <span class="check">✓</span>
+  </button>`;
+}
+
+function mediaRow(item, mode){
+  const on = state.selected.has(item.id);
+  const tick = mode === "delete" ? `<span class="tick">✓</span>` : "";
+  const compact = mode === "delete" ? "" : " compact";
+  return `<div class="row${compact}${on?" on":""}"${mode==="delete"?` data-select="${item.id}"`:""}>
+    <span class="thumb" style="background-image:url('${TONE(item.tone)}')"></span>
+    <span class="meta"><b>${item.title}</b><span>${item.kind}</span><span class="why">${item.why}</span></span>
+    ${tick}
+  </div>`;
+}
+
+const screens = {
+  1: () => `
+    <div class="screen">
+      <div class="appmark"><span class="dot"></span><b>album dare clean</b></div>
+      <h1>先看清楚，<br>再决定删不删</h1>
+      <p class="lead">用一句话告诉它你在乎谁，它把一小部分照片分成三组。建议不会自己执行。</p>
+      <ul class="promises">
+        <li><span class="num">1</span><div><b>只在本机分析</b><i>原片不出手机，不上传</i></div></li>
+        <li><span class="num">2</span><div><b>建议不会自己执行</b><i>每一次移出都要你确认</i></div></li>
+        <li><span class="num">3</span><div><b>移出后可恢复</b><i>在应用自己的回收站里至少 30 天</i></div></li>
+      </ul>
+      <div class="grow"></div>
+      <div class="foot">
+        <button class="btn primary" data-go="2">允许访问照片</button>
+        <p class="fine">需要「照片与视频」权限。只在本机读取缩略图用于分组，不会上传。</p>
+      </div>
+    </div>`,
+
+  2: () => `
+    <div class="screen">
+      <div class="kicker">第一步 · 不用建档</div>
+      <h2>相册里最常出现的<br>3 个人</h2>
+      <p class="lead">他们在你的照片里出现了 <b>1,284 次</b>。确认一下，这些是你想留住的家人吗？</p>
+      <div class="people">${PEOPLE.map(personRow).join("")}</div>
+      <div class="hintbox">没确认的人不参与判断，也不会被建议移出。以后可以随时改。</div>
+      <div class="grow"></div>
+      <div class="foot">
+        <button class="btn primary" data-go="3"${state.people.size?"":" disabled"}>就是他们</button>
+        <button class="linkbtn" data-go="3">手动选择其他人</button>
+      </div>
+    </div>`,
+
+  3: () => `
+    <div class="screen">
+      <div class="kicker">第二步 · 一句话</div>
+      <h2>用一句话说清楚</h2>
+      <p class="lead">这次先处理一小部分：相册里最近的 30 个项目。</p>
+      <div class="intent">保留有妈妈、爸爸、小朋友的<span class="caret"></span></div>
+      <div class="chips">
+        <button>只看视频</button><button>保留有小朋友的</button><button>没有爸爸的可以建议移出</button>
+      </div>
+      <div class="hintbox">没在花名册里的人出现时，这次不会产生任何「建议移出图库」。</div>
+      <div class="grow"></div>
+      <div class="foot">
+        <button class="btn primary" data-go="4">生成分组建议</button>
+        <p class="fine">不会联网，也不会改动原片。</p>
+      </div>
+    </div>`,
+
+  4: () => {
+    const n = state.selected.size;
+    return `
+    <div class="screen">
+      <div class="kicker">第三步 · 分组建议</div>
+      <h2 style="font-size:20px; margin-bottom:2px">这次整理的结果</h2>
+      <p class="lead" style="font-size:12px; margin-bottom:2px">视频排在前面 · 同一条只会出现在一组里</p>
+      <div class="buckets">
+        <div class="bucket keep">
+          <div class="head"><b>我在乎的</b><span class="n">18 个</span></div>
+          <div class="cap">认出了你在乎的人，会留下。</div>
+          ${KEEP_ITEMS.slice(0,1).map(i=>mediaRow(i,"keep")).join("")}
+          <div class="more">还有 17 个</div>
+        </div>
+        <div class="bucket warn">
+          <div class="head"><b>不确定</b><span class="badge">先不要移出</span><span class="n">3 个</span></div>
+          <div class="cap">这些不会并进「建议移出图库」。</div>
+          ${UNCERTAIN_ITEMS.map(i=>mediaRow(i,"uncertain")).join("")}
+        </div>
+        <div class="bucket">
+          <div class="head"><b>建议移出图库</b><span class="n">3 个</span></div>
+          <div class="cap">只是建议。勾选并确认后才会进入回收站。</div>
+          ${DELETE_ITEMS.map(i=>mediaRow(i,"delete")).join("")}
+        </div>
+      </div>
+      <div class="grow"></div>
+      <div class="foot">
+        <button class="btn amber" data-go="5"${n?"":" disabled"}>放进回收站（已选 ${n} 项）</button>
+      </div>
+    </div>`;
+  },
+
+  5: () => {
+    const items = DELETE_ITEMS.filter(i=>state.selected.has(i.id));
+    return `
+    <div class="screen">
+      <div class="kicker">最后确认</div>
+      <h2>确认放进回收站？</h2>
+      <p class="lead">这 ${items.length} 个项目会从「建议移出图库」移到应用自己的回收站。</p>
+      <div class="confirm-card">
+        ${items.map(i=>`<div class="row"><span class="thumb" style="background-image:url('${TONE(i.tone)}')"></span>
+          <span class="meta"><b>${i.title}</b><span>${i.kind}</span></span></div>`).join("")}
+      </div>
+      <div class="safety"><b>30 天内随时可以恢复。</b>回收站满 30 天也不会自动清除，会再问你一次。系统图库不会被直接删除。</div>
+      <div class="grow"></div>
+      <div class="foot">
+        <button class="btn primary" data-go="6" data-confirm="1">确认放进回收站</button>
+        <button class="linkbtn" data-go="4">再看一眼</button>
+      </div>
+    </div>`;
+  },
+
+  6: () => {
+    const items = DELETE_ITEMS.filter(i=>state.selected.has(i.id));
+    const held = items.filter(i=>!state.restored.has(i.id));
+    return `
+    <div class="screen">
+      <div class="kicker">完成</div>
+      <div class="donehero">
+        <div class="big">约 128 <span class="unit">MB</span></div>
+        <p>已移出 ${items.length} 个项目，还在回收站里占着位置，随时可以找回。</p>
+      </div>
+      <h2 style="margin-top:20px; font-size:18px">回收站</h2>
+      <p class="lead" style="font-size:13px">剩余持有 29 天。没有定时清除，也没有永久删除按钮。</p>
+      ${items.map(i=>`<div class="rec-item${state.restored.has(i.id)?" restored":""}">
+        <span class="thumb" style="width:38px;height:38px;border-radius:9px;background-size:cover;background-image:url('${TONE(i.tone)}')"></span>
+        <span class="meta"><b>${i.title}</b><span>${state.restored.has(i.id)?"已恢复":"剩余 29 天"}</span></span>
+        ${state.restored.has(i.id)?"":`<button data-restore="${i.id}">恢复</button>`}
+      </div>`).join("")}
+      <div class="grow"></div>
+      <div class="foot">
+        <button class="btn ghost" data-go="1">完成</button>
+      </div>
+    </div>`;
+  },
+};
+
+const notes = {
+  1:{title:"权限与承诺", goal:"3 秒内建立信任，而不是先要权限。",
+     verify:"授权率 ≥ 80%。三条承诺顺序是有意的：先讲本地，再讲不会自动执行，最后才讲可恢复。",
+     flag:"命名未定。界面里的「album dare clean」是占位。"},
+  2:{title:"发现家人 · 零建档启动", goal:"验证 PRD 里的 H2：不建档也能开始。",
+     verify:"这一屏是整份方案的关键。如果用户在这里流失，方向 A 需要重新设计。",
+     flag:"技术假设未验证：设备端人脸聚类的准确率决定这一屏能不能成立。"},
+  3:{title:"一句话整理", goal:"把「整理」变成可表达的一句话。",
+     verify:"观察用户是否改句子、改成什么。改得多说明预填句没抓住意图。",
+     flag:"预填句由第 2 屏确认的人自动生成——两屏之间是联动的。"},
+  4:{title:"三桶结果", goal:"不确定必须看起来「安全」，不能像警告。",
+     verify:"勾选率。太低说明理由不够、或用户不信任建议。",
+     flag:"「建议移出图库」里的三条都带理由，理由写在标题下面第一行。"},
+  5:{title:"最后确认", goal:"把「建议」明确变成「你的决定」。",
+     verify:"确认完成率。以及用户是否读得懂「系统图库不会被直接删除」。",
+     flag:"文案红线：这里绝不能出现「释放空间」这种诱导性表达。"},
+  6:{title:"回收站与空间回报", goal:"用可恢复性换长期信任。",
+     verify:"恢复率是反向指标：恢复率过高说明建议质量差。",
+     flag:"「约 128 MB」必须真的算过。原型里是示意值。"},
+};
+
+function renderPhone(){
+  const host = document.getElementById("phone");
+  host.innerHTML = statusbar + screens[state.screen]();
+  document.getElementById("notes").innerHTML = `
+    <div class="eyebrow">Screen ${state.screen} / 6</div>
+    <h3>${notes[state.screen].title}</h3>
+    <dl>
+      <div><dt>这一屏做什么</dt><dd>${notes[state.screen].goal}</dd></div>
+      <div><dt>验证什么</dt><dd>${notes[state.screen].verify}</dd></div>
+    </dl>
+    <div class="flag">${notes[state.screen].flag}</div>`;
+  [...document.querySelectorAll("#steps button")].forEach((b)=>{
+    b.classList.toggle("on", Number(b.dataset.n) === state.screen);
+  });
+}
+
+function renderBoard(){
+  document.getElementById("rail").innerHTML = Object.keys(screens).map((k)=>`
+    <div class="holder">
+      <div class="shell"><div class="cell"><div class="phone">${statusbar}${screens[k]()}</div></div></div>
+      <p class="label">${k}. ${notes[k].title}</p>
+    </div>`).join("");
+}
+
+function go(n){ state.screen = n; renderPhone(); }
+
+document.getElementById("steps").innerHTML = Object.keys(screens)
+  .map((k)=>`<button data-n="${k}">${k}</button>`).join("");
+
+document.getElementById("steps").addEventListener("click",(e)=>{
+  const b = e.target.closest("button[data-n]");
+  if (b) go(Number(b.dataset.n));
+});
+
+document.getElementById("phone").addEventListener("click",(e)=>{
+  const p = e.target.closest("[data-person]");
+  if (p){
+    const id = p.dataset.person;
+    state.people.has(id) ? state.people.delete(id) : state.people.add(id);
+    renderPhone(); return;
+  }
+  const s = e.target.closest("[data-select]");
+  if (s){
+    const id = s.dataset.select;
+    state.selected.has(id) ? state.selected.delete(id) : state.selected.add(id);
+    renderPhone(); return;
+  }
+  const r = e.target.closest("[data-restore]");
+  if (r){ state.restored.add(r.dataset.restore); renderPhone(); return; }
+  const c = e.target.closest("[data-confirm]");
+  if (c){ renderBoardSoon(); }
+  const g = e.target.closest("[data-go]");
+  if (g && !g.disabled){ go(Number(g.dataset.go)); }
+});
+
+function renderBoardSoon(){ if (state.board) renderBoard(); }
+
+document.getElementById("boardToggle").addEventListener("click",(e)=>{
+  state.board = !state.board;
+  document.getElementById("stage").style.display = state.board ? "none" : "flex";
+  document.getElementById("board").classList.toggle("on", state.board);
+  e.target.textContent = state.board ? "返回单屏" : "全部铺开";
+  if (state.board) renderBoard();
+});
+
+/* 默认把两条「建议移出」勾上，方便直接看到第 5 屏 */
+state.selected = new Set(["vid-landscape","photo-ceiling"]);
+renderPhone();
+</script>
+</body>
+</html>

@@ -15,6 +15,18 @@
 | `docs/AC.md` | AC-1 到 AC-8 |
 | `docs/BLIND_TEST.md` | T1 到 T8。演示前 T1 和 T3 必须通过 |
 | `docs/ARCHITECTURE.md` | 规则和适配层 |
+| `docs/PRODUCT-DIRECTIONS.md` | 三个产品方向的对比与取舍 |
+| `docs/PRD.md` | v0.1 产品方案：三个假设、六屏结构、出第一版之前不做的事 |
+| `design/hifi-prototype.html` | 六屏高保真原型，双击打开，可点着走完流程 |
+
+## 先看产品，再看代码
+
+功能开发暂时停在这里。现在要回答的是「这个产品立在哪」，不是「再写一个功能」。
+
+- `docs/PRODUCT-DIRECTIONS.md`：家庭相册「敢删」/ 存储清理 / 回忆发现，三个方向的取舍。
+- `docs/PRD.md`：选定方向后的 v0.1 方案。最关键的假设是**零建档启动**——不让人先建花名册也能开始。
+- `design/hifi-prototype.html`：六屏原型，打开就能点。每屏右侧写了这一屏在验证什么。
+
 
 ## 跑 core
 
