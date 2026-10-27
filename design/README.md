@@ -1,5 +1,7 @@
 # 设计稿
 
+![六屏原型](screens/board.png)
+
 ## hifi-prototype.html
 
 六屏高保真原型，单文件，双击打开，不需要 DevEco，也不需要设计工具。
